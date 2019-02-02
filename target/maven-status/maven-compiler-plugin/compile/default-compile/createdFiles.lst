@@ -1,0 +1,15 @@
+org\springframework\player_stats\PlayerStatObject.class
+org\springframework\player_stats\PlayersStatsObject$2.class
+org\springframework\player_stats\PlayersStatsObject$1.class
+org\springframework\player_stats\PlayerStatObject$Stat.class
+org\springframework\player_stats\PlayersStats.class
+org\springframework\player_stats\PlayerSeasonStats.class
+org\springframework\player_stats\GameStats.class
+org\springframework\player_stats\GameStatsObject.class
+org\springframework\player_stats\PlayerWeeksStats.class
+org\springframework\player_stats\GameStats$1.class
+org\springframework\player_stats\PlayersStatsObject.class
+org\springframework\player_stats\PlayerWeeksStats$WeekStats.class
+org\springframework\player_stats\Application.class
+org\springframework\player_stats\PlayerStatsController.class
+org\springframework\player_stats\StatObject.class

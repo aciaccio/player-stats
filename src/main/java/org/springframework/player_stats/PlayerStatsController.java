@@ -14,8 +14,9 @@ import java.lang.Number;
 public class PlayerStatsController {
 
    @RequestMapping("/playerweeksstats")
-   public PlayerWeeksStats playerWeeksStats(@RequestParam(value="weeks", defaultValue="1-17") String weeks,
-                                           @RequestParam(value="playerId", defaultValue="0") String playerId) 
+   public PlayerWeeksStats playerSeasonWeeksStats(@RequestParam(value="season", defaultValue="2018") String season,
+                                                  @RequestParam(value="weeks", defaultValue="1-17") String weeks,
+                                                  @RequestParam(value="playerId", defaultValue="0") String playerId) 
    {
       //Parse 'weeks' for range
       String _weeks[] = weeks.split("-");
@@ -28,7 +29,7 @@ public class PlayerStatsController {
       //If a single week was passed create stats for single week
       if (_weeks.length == 1)
       {
-         pso = PlayersStats.GetPlayerStatsForSeasonWeek(playerId, "2017", _weeks[0]);
+         pso = PlayersStats.GetPlayerStatsForSeasonWeek(playerId, season, _weeks[0]);
          ws_map.put(_weeks[0], CreateWeekStatsFromPlayerStatObject(pso));
       }
       
@@ -39,7 +40,7 @@ public class PlayerStatsController {
          for (int i = Integer.valueOf(_weeks[0]); i <= Integer.valueOf(_weeks[1]); i++)
          {
             String week = Integer.toString(i);
-            pso = PlayersStats.GetPlayerStatsForSeasonWeek(playerId, "2017", week);
+            pso = PlayersStats.GetPlayerStatsForSeasonWeek(playerId, season, week);
             if (pso != null)
                ws_map.put(week, CreateWeekStatsFromPlayerStatObject(pso));
          }
@@ -58,16 +59,16 @@ public class PlayerStatsController {
    }
 
    @RequestMapping("/playerseasonstats")
-   public PlayerSeasonStats playerSeasonStats(@RequestParam(value="season", defaultValue="2017") String season,
+   public PlayerSeasonStats playerSeasonStats(@RequestParam(value="season", defaultValue="2018") String season,
                                               @RequestParam(value="playerId", defaultValue="0") String playerId) 
-   {      
-      PlayerSeasonStats pss = new PlayerSeasonStats();
+   {
+      PlayerStatObject pso = PlayersStats.GetPlayerStatsForSeason(playerId, season);
+      PlayerSeasonStats pss = CreateSeasonStatsFromPlayerStatObject (pso);
+      pss.setId(pso.getId());
+      pss.setGsisPlayerId(pso.getGsIsPlayerId());
+      pss.setEsbid(pso.getEsbid());
+      pss.setName(pso.getName());
       
-      //Map short names from GameStats to Player stat keys
-      PlayersStatsObject playersStats= new PlayersStatsObject("1", "2017");
-            
-      System.out.println(playersStats.toString());
-
       return pss;
    }
    
@@ -86,6 +87,20 @@ public class PlayerStatsController {
       
       return ws;
    }
+   
+   public PlayerSeasonStats CreateSeasonStatsFromPlayerStatObject (PlayerStatObject pso)
+   {
+      PlayerSeasonStats pss = new PlayerSeasonStats();
+
+      pss.setSeasonStats(TranslateStatIdsToShortNames(pso.getStats()));
+      pss.setPosition(pso.getPosition());
+      pss.setTeamAbbr(pso.getTeamAbbr());
+      pss.setSeasonStdPts(new Float(CalcStdPts(pso)).toString()); //TODO:Calculate std pts
+      pss.setSeasonPprPts(new Float(CalcPprPts(pso)).toString()); //TODO:Calculate ppr pts
+      
+      return pss;
+   }
+
    
    public Map<String,String> TranslateStatIdsToShortNames (Map<String, String> stats)
    {
